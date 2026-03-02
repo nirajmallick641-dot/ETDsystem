@@ -1,0 +1,2178 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity Theft Detection System</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&amp;family=Rajdhani:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    
+    :root {
+      --primary: #00f0ff;
+      --secondary: #0a1628;
+      --accent: #ff3366;
+      --success: #00ff88;
+      --warning: #ffaa00;
+      --surface: #0d2137;
+    }
+    
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--secondary);
+      color: #e0f0ff;
+      overflow-x: hidden;
+    }
+    
+    .font-orbitron { font-family: 'Orbitron', monospace; }
+    
+    /* Animated Background */
+    .cyber-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .cyber-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse at 20% 80%, rgba(0, 240, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(255, 51, 102, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(0, 255, 136, 0.08) 0%, transparent 70%);
+      animation: bgPulse 8s ease-in-out infinite;
+    }
+    
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+    
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: particleFloat 15s infinite;
+      opacity: 0.6;
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    @keyframes particleFloat {
+      0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      50% { transform: translateY(-10vh) scale(1); }
+    }
+    
+    /* Glowing Effects */
+    .glow-text {
+      text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 40px var(--primary);
+    }
+    
+    .glow-box {
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1);
+    }
+    
+    .glow-border {
+      border: 1px solid var(--primary);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.1);
+    }
+    
+    /* Button Animations */
+    .cyber-btn {
+      position: relative;
+      background: linear-gradient(135deg, var(--surface) 0%, #1a3a5c 100%);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 12px 24px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .cyber-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .cyber-btn:hover::before {
+      left: 100%;
+    }
+    
+    .cyber-btn:hover {
+      background: linear-gradient(135deg, #1a3a5c 0%, #2a5a8c 100%);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.5), 0 0 60px rgba(0, 240, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    .cyber-btn:active {
+      transform: translateY(0);
+    }
+    
+    /* Card Styles */
+    .cyber-card {
+      background: linear-gradient(135deg, rgba(13, 33, 55, 0.9) 0%, rgba(26, 58, 92, 0.9) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .cyber-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+      transform: translateY(-5px);
+    }
+    
+    /* Input Styles */
+    .cyber-input {
+      background: rgba(10, 22, 40, 0.8);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #e0f0ff;
+      padding: 12px 16px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    .cyber-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    }
+    
+    .cyber-input::placeholder {
+      color: rgba(224, 240, 255, 0.5);
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--secondary);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00d4e0;
+    }
+    
+    /* Loading Animation */
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(0, 240, 255, 0.3);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Pulse Animation */
+    .pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Alert Flash */
+    .alert-flash {
+      animation: alertFlash 0.5s ease-in-out infinite;
+    }
+    
+    @keyframes alertFlash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    /* Slide In Animation */
+    .slide-in {
+      animation: slideIn 0.5s ease-out forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    /* Fade In Animation */
+    .fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Scale In Animation */
+    .scale-in {
+      animation: scaleIn 0.3s ease-out forwards;
+    }
+    
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    /* Data Flow Animation */
+    .data-flow {
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      background-size: 200% 100%;
+      animation: dataFlow 2s linear infinite;
+    }
+    
+    @keyframes dataFlow {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    /* Radar Animation */
+    .radar-sweep {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+      background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 240, 255, 0.4) 30deg, transparent 60deg);
+      animation: radarSweep 4s linear infinite;
+    }
+    
+    @keyframes radarSweep {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    .radar-ring {
+      position: absolute;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .radar-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+      animation: radarDotPulse 1s ease-in-out infinite;
+    }
+    
+    @keyframes radarDotPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.5); }
+    }
+    
+    /* Status Indicators */
+    .status-online {
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+    
+    .status-warning {
+      background: var(--warning);
+      box-shadow: 0 0 10px var(--warning);
+    }
+    
+    .status-alert {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    
+    /* Navigation */
+    .nav-item {
+      position: relative;
+      padding: 12px 20px;
+      color: rgba(224, 240, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .nav-item:hover {
+      color: var(--primary);
+      background: rgba(0, 240, 255, 0.1);
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+      background: rgba(0, 240, 255, 0.15);
+      border-left-color: var(--primary);
+    }
+    
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+    
+    /* Chart Styles */
+    .chart-bar {
+      background: linear-gradient(180deg, var(--primary) 0%, rgba(0, 240, 255, 0.3) 100%);
+      transition: height 0.5s ease;
+    }
+    
+    .chart-line {
+      stroke: var(--primary);
+      stroke-width: 2;
+      fill: none;
+      filter: drop-shadow(0 0 5px var(--primary));
+    }
+    
+    /* Map Styles */
+    .map-container {
+      background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 100%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .map-marker {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+    
+    .map-marker::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: markerPulse 2s ease-in-out infinite;
+    }
+    
+    .map-marker::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      animation: markerRing 2s ease-out infinite;
+    }
+    
+    @keyframes markerPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+    }
+    
+    @keyframes markerRing {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+    }
+    
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, rgba(255, 51, 102, 0.9) 0%, rgba(255, 51, 102, 0.7) 100%);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      color: white;
+      font-family: 'Orbitron', monospace;
+      z-index: 10000;
+      animation: toastSlide 0.5s ease-out;
+      box-shadow: 0 0 30px rgba(255, 51, 102, 0.5);
+    }
+    
+    @keyframes toastSlide {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    /* Gauge */
+    .gauge-container {
+      position: relative;
+      width: 150px;
+      height: 75px;
+      overflow: hidden;
+    }
+    
+    .gauge-bg {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(from 180deg, #ff3366 0deg, #ffaa00 90deg, #00ff88 180deg);
+      clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+    }
+    
+    .gauge-cover {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: var(--surface);
+      border-radius: 50%;
+      top: 15px;
+      left: 15px;
+    }
+    
+    .gauge-needle {
+      position: absolute;
+      width: 4px;
+      height: 60px;
+      background: var(--primary);
+      bottom: 0;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(-90deg);
+      transition: transform 1s ease;
+      box-shadow: 0 0 10px var(--primary);
+    }
+    
+    /* Desktop Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100%;
+      z-index: 50;
+      transition: none;
+    }
+    
+    .main-content {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      transition: none;
+    }
+    
+    .sidebar-overlay {
+      display: none;
+    }
+    
+    /* Responsive - Mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        height: 100%;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .mobile-menu-btn {
+        display: block !important;
+      }
+      
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      
+      .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+    
+    /* Hide mobile menu button by default */
+    .mobile-menu-btn {
+      display: none;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full overflow-auto">
+  <!-- Animated Background -->
+  <div class="cyber-bg">
+   <div class="grid-overlay"></div>
+   <div class="particles" id="particles"></div>
+  </div><!-- Main App Container -->
+  <div id="app" class="h-full"></div><!-- Toast Container -->
+  <div id="toast-container"></div><!-- Audio for Alerts (silent by default, triggered on user interaction) -->
+  <audio id="alert-sound" preload="auto">
+   <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleEQlTqrj1q9+Gy1Es/DntXscFk+3/+S0cRQSUcH/4q1qEhRXyf/crWQSF13N/9SqYRUYYM/+zqZhFxtk0P7IomIXHWfR/cOeYhofatH7vppjGx9s0fm5l2QbIW7S97WTZRwictL1sZBmGyNz0vOuj2cbJHbS8auNaBwkd9LwqIxqHCZ40++ljmsdJnrS7qOMbRwne9LsooxtHCd80eugjm4cJ33S6Z+ObhsoftHonI9vGyd/0eaaj3AbKH/R5JiQcRsogdHjlpFyGymC0OKUknMbKYPQ4JKTdBspg9DelJR0GimE0N2SlHUaKYTQ3JCVdhophNDbj5Z3GSmF0NqOl3gZKYXQ2Y2YeBkphtDYjJh5GCmH0NeKmnkYKYjQ1omaeRgqiNDUiJt6FyqJ0NOHnHoXKonQ0oadeRcridDRhp16FyqK0NCFnnoXKorQz4SfehYri9DOg596FiuL0M2CoHoWK4vQzIGhehUri9DLgKJ6FSuM0MqAonoVLIzQyX+jehUsjdDIfqN7FSyN0Md+pHsULI7Qxn2kexQsjt/FfKV7FCyO38R7pXsULY/fxHqlexMtj9/DeqZ8Ey2Q38J5pnwTLZDfwnmnfBMtkN/BeKh8Ei6R38B3qHwSLpHfv3aofBIukd++dql8Ei6S37x1qXwRLpLfu3WqfREuk9+6dKp9ES6T37l0q30RL5Pft3OrfREvlN+2cqt9EC+U37VyrH0QL5Xfs3GsfRAvld+ycax9EDCW36xxrX0PMJX+q3CtfQ8wlv6qcK5+DjCW/qlvrn4OMZf+qG6vfg4xl/6nbq9+DTGY/qZtsH4NMZj+pW2wfg0xmf6kbLF+DDKZ/qNssX4MMpr+omuxfgwymv6ha7J+CzKb/qBqsn4LM5v+n2qzfgsznP6earN+CjOc/p1ptH4KM5z+nGm0fgoznd+babV+CTSd35pptn4JNJ7+mWi2fgk0nv6YZLZ+CTSf/5dXtn4INJ/+lVG2fgg1oP6VS7Z+BzWg/5VHtn4HNaD+lUW3fgc1oP6VRLZ+BzWh/5VBtn4HNaH+lT+3fwY2of6VPbd/Bjah/5U8t38GNqL+lTu3fwY2ov6VO7d/Bjej/pU6t38FN6P+lTm4fwU3o/6VOLh/BTek/pU3uH8FN6T+lTe4fwU3pP6VN7h/BTel/pU2uH8EN6X+lTW4fwQ4pf6VNbh/BDil/pU1uH8EOKX+lTW4fwQ4pv6VNLh/BDim/pU0uH8DOKX+lTS4fwM4pf6VNLh/Azil/pU0uH8DOKX+lTS4fwM4pf6VM7h/Azml/pUzuH8DOaX+lTO4fwM5pf6VM7h/Azml/pUzuH8DOaX+lTO4fwM5pf6VM7l/Ajml/pUzuX8COaX+lTO5fwI5pf6VM7l/Ajml/pUzuX8COaX+lTO5fwI=" type="audio/wav">
+  </audio>
+  <script>
+    // =============================================
+    // CONFIGURATION & STATE
+    // =============================================
+    const defaultConfig = {
+      system_title: 'Electricity Theft Detection System',
+      college_name: 'PPI Institute of Technology',
+      primary_color: '#00f0ff',
+      secondary_color: '#0a1628',
+      accent_color: '#ff3366',
+      text_color: '#e0f0ff',
+      surface_color: '#0d2137'
+    };
+    
+    let config = { ...defaultConfig };
+    let currentPage = 'login';
+    let isLoggedIn = false;
+    let currentUser = null;
+    let allRecords = [];
+    let alertSound = null;
+    let sidebarOpen = false;
+    let hardwareEnabled = false;
+    let hardwareData = {
+      MTR001: { voltage: 220, current: 15, power: 3300, factor: 0.98 },
+      MTR002: { voltage: 218, current: 12, power: 2616, factor: 0.99 },
+      MTR003: { voltage: 222, current: 18, power: 3996, factor: 0.97 },
+      MTR004: { voltage: 219, current: 16, power: 3504, factor: 0.98 },
+      MTR005: { voltage: 221, current: 20, power: 4420, factor: 0.96 }
+    };
+    
+    // Team Members
+    const teamMembers = [
+      { name: 'Niraj Mallick', role: 'Team Lead', avatar: '👨‍💻' },
+      { name: 'Adit Patel', role: 'Developer', avatar: '👨‍🔬' },
+      { name: 'Moksh Bahtt', role: 'Analyst', avatar: '👨‍🎓' },
+      { name: 'Mahashivratri', role: 'Designer', avatar: '👨‍🎨' }
+    ];
+    
+    // Simulated Meters Data
+    const metersData = [
+      { id: 'MTR-001', location: 'Block A', lat: 23.0225, lng: 72.5714, status: 'online' },
+      { id: 'MTR-002', location: 'Block B', lat: 23.0235, lng: 72.5724, status: 'online' },
+      { id: 'MTR-003', location: 'Block C', lat: 23.0215, lng: 72.5704, status: 'warning' },
+      { id: 'MTR-004', location: 'Block D', lat: 23.0245, lng: 72.5734, status: 'online' },
+      { id: 'MTR-005', location: 'Block E', lat: 23.0205, lng: 72.5694, status: 'alert' }
+    ];
+    
+    // =============================================
+    // UTILITY FUNCTIONS
+    // =============================================
+    function generateId() {
+      return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleString();
+    }
+    
+    function showToast(message, type = 'alert') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.background = type === 'success' 
+        ? 'linear-gradient(135deg, rgba(0, 255, 136, 0.9) 0%, rgba(0, 255, 136, 0.7) 100%)'
+        : type === 'warning'
+        ? 'linear-gradient(135deg, rgba(255, 170, 0, 0.9) 0%, rgba(255, 170, 0, 0.7) 100%)'
+        : 'linear-gradient(135deg, rgba(255, 51, 102, 0.9) 0%, rgba(255, 51, 102, 0.7) 100%)';
+      toast.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '🚨'}</span>
+          <span>${message}</span>
+        </div>
+      `;
+      container.appendChild(toast);
+      
+      // Play alert sound for alerts
+      if (type === 'alert' && alertSound) {
+        alertSound.currentTime = 0;
+        alertSound.play().catch(() => {});
+      }
+      
+      setTimeout(() => toast.remove(), 5000);
+    }
+    
+    function createParticles() {
+      const container = document.getElementById('particles');
+      if (!container) return;
+      container.innerHTML = '';
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        container.appendChild(particle);
+      }
+    }
+    
+    // =============================================
+    // DATA SIMULATION
+    // =============================================
+    let simulationInterval = null;
+    
+    function startSimulation() {
+      if (simulationInterval) return;
+      
+      simulationInterval = setInterval(async () => {
+        if (!isLoggedIn) return;
+        
+        // Random chance of generating an alert
+        if (Math.random() < 0.15) {
+          const meter = metersData[Math.floor(Math.random() * metersData.length)];
+          const alertTypes = ['Voltage Anomaly', 'Current Mismatch', 'Bypass Detected', 'Tampering Alert', 'Meter Manipulation'];
+          const severities = ['low', 'medium', 'high', 'critical'];
+          
+          const newAlert = {
+            type: 'alert',
+            meter_id: meter.id,
+            location: meter.location,
+            lat: meter.lat + (Math.random() - 0.5) * 0.01,
+            lng: meter.lng + (Math.random() - 0.5) * 0.01,
+            reading: Math.round(Math.random() * 500 + 100),
+            sensor1: Math.round(Math.random() * 100),
+            sensor2: Math.round(Math.random() * 100),
+            status: alertTypes[Math.floor(Math.random() * alertTypes.length)],
+            severity: severities[Math.floor(Math.random() * severities.length)],
+            timestamp: new Date().toISOString(),
+            resolved: false
+          };
+          
+          if (allRecords.length < 999) {
+            const result = await window.dataSdk.create(newAlert);
+            if (result.isOk) {
+              showToast(`⚡ ${newAlert.status} detected at ${newAlert.location}!`, 'alert');
+            }
+          }
+        }
+      }, 8000);
+    }
+    
+    function stopSimulation() {
+      if (simulationInterval) {
+        clearInterval(simulationInterval);
+        simulationInterval = null;
+      }
+    }
+    
+    // =============================================
+    // PAGE RENDERERS
+    // =============================================
+    
+    function renderLoginPage() {
+      return `
+        <div class="min-h-full flex items-center justify-center p-4">
+          <div class="cyber-card p-8 w-full max-w-md scale-in">
+            <div class="text-center mb-8">
+              <div class="text-6xl mb-4">⚡</div>
+              <h1 class="font-orbitron text-2xl glow-text mb-2" id="login-title">${config.system_title}</h1>
+              <p class="text-sm opacity-70" id="login-college">${config.college_name}</p>
+            </div>
+            
+            <div id="auth-form">
+              <div id="login-form">
+                <h2 class="font-orbitron text-xl mb-6 text-center">Login</h2>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm mb-2 opacity-70">Email</label>
+                    <input type="email" id="login-email" class="cyber-input rounded" placeholder="Enter your email">
+                  </div>
+                  <div>
+                    <label class="block text-sm mb-2 opacity-70">Password</label>
+                    <input type="password" id="login-password" class="cyber-input rounded" placeholder="Enter your password">
+                  </div>
+                  <button onclick="handleLogin()" class="cyber-btn w-full rounded mt-6">
+                    <span class="relative z-10">Login</span>
+                  </button>
+                </div>
+                <p class="text-center mt-4 text-sm">
+                  Don't have an account? 
+                  <span class="text-cyan-400 cursor-pointer hover:underline" onclick="showSignup()">Sign Up</span>
+                </p>
+              </div>
+              
+              <div id="signup-form" class="hidden">
+                <h2 class="font-orbitron text-xl mb-6 text-center">Sign Up</h2>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm mb-2 opacity-70">Full Name</label>
+                    <input type="text" id="signup-name" class="cyber-input rounded" placeholder="Enter your name">
+                  </div>
+                  <div>
+                    <label class="block text-sm mb-2 opacity-70">Email</label>
+                    <input type="email" id="signup-email" class="cyber-input rounded" placeholder="Enter your email">
+                  </div>
+                  <div>
+                    <label class="block text-sm mb-2 opacity-70">Password</label>
+                    <input type="password" id="signup-password" class="cyber-input rounded" placeholder="Create a password">
+                  </div>
+                  <div>
+                    <label class="block text-sm mb-2 opacity-70">Department</label>
+                    <input type="text" id="signup-dept" class="cyber-input rounded" placeholder="Your department">
+                  </div>
+                  <button onclick="handleSignup()" class="cyber-btn w-full rounded mt-6">
+                    <span class="relative z-10">Create Account</span>
+                  </button>
+                </div>
+                <p class="text-center mt-4 text-sm">
+                  Already have an account? 
+                  <span class="text-cyan-400 cursor-pointer hover:underline" onclick="showLogin()">Login</span>
+                </p>
+              </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-cyan-500/30">
+              <p class="text-xs text-center opacity-50">Present by PPI</p>
+              <div class="flex flex-wrap justify-center gap-2 mt-2">
+                ${teamMembers.map(m => `<span class="text-xs bg-cyan-500/20 px-2 py-1 rounded">${m.avatar} ${m.name}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderSidebar() {
+      const navItems = [
+        { id: 'overview', icon: '📊', label: 'Overview Dashboard' },
+        { id: 'analytics', icon: '📈', label: 'Analytics' },
+        { id: 'meters', icon: '⚡', label: 'Meters' },
+        { id: 'alerts', icon: '🚨', label: 'Alerts' },
+        { id: 'detection', icon: '🎯', label: 'Detection System' },
+        { id: 'profile', icon: '👤', label: 'Profile' },
+        { id: 'contact', icon: '📧', label: 'Contact' }
+      ];
+      
+      return `
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+        
+        <aside class="sidebar bg-gradient-to-b from-slate-900/95 to-slate-800/95 border-r border-cyan-500/30 overflow-y-auto" id="sidebar">
+          <div class="p-4 border-b border-cyan-500/30">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">⚡</span>
+              <div>
+                <h1 class="font-orbitron text-sm glow-text">ETDS</h1>
+                <p class="text-xs opacity-50">v2.0</p>
+              </div>
+            </div>
+          </div>
+          
+          <nav class="py-4">
+            ${navItems.map(item => `
+              <div class="nav-item ${currentPage === item.id ? 'active' : ''}" onclick="navigateTo('${item.id}')">
+                <span class="mr-3">${item.icon}</span>
+                <span class="font-medium">${item.label}</span>
+              </div>
+            `).join('')}
+          </nav>
+          
+          <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-cyan-500/30">
+            <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 py-2 px-4 bg-red-500/20 border border-red-500/50 rounded text-red-400 hover:bg-red-500/30 transition-all">
+              <span>🚪</span>
+              <span>Logout</span>
+            </button>
+          </div>
+        </aside>
+      `;
+    }
+    
+    function renderMainLayout(content) {
+      return `
+        ${renderSidebar()}
+        
+        <button class="mobile-menu-btn fixed top-4 left-4 z-40 p-3 bg-slate-800 border border-cyan-500/50 rounded-lg md:hidden" onclick="toggleSidebar()">
+          <span class="text-xl">☰</span>
+        </button>
+        
+        <main class="main-content min-h-full p-4 md:p-6">
+          ${content}
+        </main>
+      `;
+    }
+    
+    function renderOverviewDashboard() {
+      const alerts = allRecords.filter(r => r.type === 'alert' && !r.resolved);
+      const totalPower = hardwareEnabled 
+        ? Object.values(hardwareData).reduce((sum, m) => sum + m.power, 0)
+        : Math.round(Math.random() * 5000 + 10000);
+      const efficiency = Math.round(Math.random() * 10 + 85);
+      
+      return renderMainLayout(`
+        <div class="fade-in">
+          <header class="mb-6">
+            <h1 class="font-orbitron text-2xl md:text-3xl glow-text mb-2">Overview Dashboard</h1>
+            <p class="opacity-70">Real-time power monitoring and system status</p>
+            ${hardwareEnabled ? '<p class="text-xs text-green-400">🟢 HARDWARE CONNECTED</p>' : ''}
+          </header>
+          
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="cyber-card p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-2xl">⚡</span>
+                <span class="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded">LIVE</span>
+              </div>
+              <p class="text-2xl font-orbitron">${totalPower.toLocaleString()}</p>
+              <p class="text-xs opacity-70">Total Power (W)</p>
+            </div>
+            
+            <div class="cyber-card p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-2xl">📊</span>
+                <span class="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded">ACTIVE</span>
+              </div>
+              <p class="text-2xl font-orbitron">${metersData.length}</p>
+              <p class="text-xs opacity-70">Active Meters</p>
+            </div>
+            
+            <div class="cyber-card p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-2xl">🚨</span>
+                <span class="text-xs px-2 py-1 ${alerts.length > 0 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'} rounded">${alerts.length > 0 ? 'ALERT' : 'CLEAR'}</span>
+              </div>
+              <p class="text-2xl font-orbitron ${alerts.length > 0 ? 'text-red-400' : ''}">${alerts.length}</p>
+              <p class="text-xs opacity-70">Active Alerts</p>
+            </div>
+            
+            <div class="cyber-card p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-2xl">✅</span>
+                <span class="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded">GOOD</span>
+              </div>
+              <p class="text-2xl font-orbitron">${efficiency}%</p>
+              <p class="text-xs opacity-70">System Efficiency</p>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Live Power Flow -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-400 rounded-full pulse"></span>
+                Live Power Flow
+              </h3>
+              <div class="relative h-48 bg-slate-900/50 rounded overflow-hidden">
+                <svg width="100%" height="100%" viewBox="0 0 400 180" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="powerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.5" />
+                      <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0" />
+                    </linearGradient>
+                  </defs>
+                  <path id="power-area" fill="url(#powerGrad)" />
+                  <path id="power-line" class="chart-line" />
+                </svg>
+                <div class="absolute bottom-2 right-2 text-xs opacity-50">${hardwareEnabled ? '🔌 Real-time' : 'Simulated'}</div>
+              </div>
+            </div>
+            
+            <!-- System Status -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4">System Status</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <span class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full status-online"></span>
+                    Main Server
+                  </span>
+                  <span class="text-green-400 text-sm">Online</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <span class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full status-online"></span>
+                    Data Pipeline
+                  </span>
+                  <span class="text-green-400 text-sm">Active</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <span class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full status-online"></span>
+                    Alert System
+                  </span>
+                  <span class="text-green-400 text-sm">Monitoring</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded">
+                  <span class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full ${alerts.length > 0 ? 'status-alert alert-flash' : 'status-online'}"></span>
+                    ${hardwareEnabled ? '🔌 Hardware Interface' : 'Threat Detection'}
+                  </span>
+                  <span class="${alerts.length > 0 ? 'text-red-400' : 'text-green-400'} text-sm">${
+                    hardwareEnabled ? 'Connected' : 
+                    alerts.length > 0 ? 'Active Threats' : 'Secure'
+                  }</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Recent Meter Readings -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4">Recent Meter Readings</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-left opacity-70">
+                      <th class="pb-2">Meter ID</th>
+                      <th class="pb-2">Location</th>
+                      <th class="pb-2">Reading</th>
+                      <th class="pb-2">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${metersData.map(meter => {
+                      const hw = hardwareData[meter.id.replace('MTR-', 'MTR')] || {};
+                      const reading = hardwareEnabled ? hw.power : Math.round(Math.random() * 500 + 100);
+                      return `
+                      <tr class="border-t border-cyan-500/20">
+                        <td class="py-2 font-mono">${meter.id}</td>
+                        <td class="py-2">${meter.location}</td>
+                        <td class="py-2">${reading} ${hardwareEnabled ? 'W' : 'kW'}</td>
+                        <td class="py-2">
+                          <span class="px-2 py-1 rounded text-xs ${
+                            meter.status === 'online' ? 'bg-green-500/20 text-green-400' :
+                            meter.status === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-red-500/20 text-red-400'
+                          }">${meter.status}</span>
+                        </td>
+                      </tr>
+                    `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <!-- Sensor Readings -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4">Sensor Readings</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-900/50 p-4 rounded text-center">
+                  <p class="text-xs opacity-70 mb-2">Sensor 1 - Voltage</p>
+                  <div class="gauge-container mx-auto mb-2">
+                    <div class="gauge-bg"></div>
+                    <div class="gauge-cover"></div>
+                    <div class="gauge-needle" id="gauge-sensor1" style="transform: translateX(-50%) rotate(-45deg);"></div>
+                  </div>
+                  <p class="font-orbitron text-xl" id="sensor1-value">${hardwareEnabled ? '220V' : '220V'}</p>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded text-center">
+                  <p class="text-xs opacity-70 mb-2">Sensor 2 - Current</p>
+                  <div class="gauge-container mx-auto mb-2">
+                    <div class="gauge-bg"></div>
+                    <div class="gauge-cover"></div>
+                    <div class="gauge-needle" id="gauge-sensor2" style="transform: translateX(-50%) rotate(0deg);"></div>
+                  </div>
+                  <p class="font-orbitron text-xl" id="sensor2-value">${hardwareEnabled ? '15A' : '15A'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+    
+    function renderAnalyticsDashboard() {
+      return renderMainLayout(`
+        <div class="fade-in">
+          <header class="mb-6">
+            <h1 class="font-orbitron text-2xl md:text-3xl glow-text mb-2">Analytics Dashboard</h1>
+            <p class="opacity-70">Comprehensive data analysis and trends</p>
+          </header>
+          
+          <!-- Time Filter -->
+          <div class="cyber-card p-4 mb-6">
+            <div class="flex flex-wrap gap-2">
+              <button class="px-4 py-2 bg-cyan-500/30 border border-cyan-500 rounded font-orbitron text-sm">24H</button>
+              <button class="px-4 py-2 bg-slate-700/50 border border-slate-600 rounded font-orbitron text-sm hover:border-cyan-500 transition-all">7D</button>
+              <button class="px-4 py-2 bg-slate-700/50 border border-slate-600 rounded font-orbitron text-sm hover:border-cyan-500 transition-all">30D</button>
+              <button class="px-4 py-2 bg-slate-700/50 border border-slate-600 rounded font-orbitron text-sm hover:border-cyan-500 transition-all">90D</button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Power Consumption Chart -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4">Power Consumption Trend</h3>
+              <div class="h-64 flex items-end gap-2" id="consumption-chart">
+                ${Array(12).fill(0).map((_, i) => `
+                  <div class="flex-1 flex flex-col items-center">
+                    <div class="chart-bar w-full rounded-t" style="height: ${30 + Math.random() * 70}%"></div>
+                    <span class="text-xs mt-2 opacity-50">${i + 1}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <p class="text-center text-xs opacity-50 mt-2">Hours</p>
+            </div>
+            
+            <!-- Anomaly Distribution -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4">Anomaly Distribution</h3>
+              <div class="relative h-64">
+                <svg width="100%" height="100%" viewBox="0 0 200 200">
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(0,240,255,0.2)" stroke-width="20" />
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#ff3366" stroke-width="20" 
+                    stroke-dasharray="125.6 502.4" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#ffaa00" stroke-width="20" 
+                    stroke-dasharray="100.48 502.4" stroke-dashoffset="-125.6" transform="rotate(-90 100 100)" />
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#00ff88" stroke-width="20" 
+                    stroke-dasharray="276.32 502.4" stroke-dashoffset="-226.08" transform="rotate(-90 100 100)" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center flex-col">
+                  <p class="font-orbitron text-2xl">${allRecords.filter(r => r.type === 'alert').length}</p>
+                  <p class="text-xs opacity-50">Total Alerts</p>
+                </div>
+              </div>
+              <div class="flex justify-center gap-4 mt-4 flex-wrap">
+                <span class="flex items-center gap-2 text-xs"><span class="w-3 h-3 rounded bg-red-500"></span>Critical (25%)</span>
+                <span class="flex items-center gap-2 text-xs"><span class="w-3 h-3 rounded bg-yellow-500"></span>Warning (20%)</span>
+                <span class="flex items-center gap-2 text-xs"><span class="w-3 h-3 rounded bg-green-500"></span>Normal (55%)</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Loss Analysis -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4">Loss Analysis</h3>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>Technical Loss</span>
+                    <span>12%</span>
+                  </div>
+                  <div class="h-2 bg-slate-700 rounded overflow-hidden">
+                    <div class="h-full bg-cyan-500 rounded" style="width: 12%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>Commercial Loss</span>
+                    <span>8%</span>
+                  </div>
+                  <div class="h-2 bg-slate-700 rounded overflow-hidden">
+                    <div class="h-full bg-yellow-500 rounded" style="width: 8%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>Theft Detection</span>
+                    <span>5%</span>
+                  </div>
+                  <div class="h-2 bg-slate-700 rounded overflow-hidden">
+                    <div class="h-full bg-red-500 rounded" style="width: 5%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Peak Hours -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4">Peak Usage Hours</h3>
+              <div class="space-y-2">
+                ${['09:00', '14:00', '19:00', '21:00'].map((time, i) => `
+                  <div class="flex items-center justify-between p-2 bg-slate-900/50 rounded">
+                    <span class="font-mono">${time}</span>
+                    <div class="flex items-center gap-2">
+                      <div class="w-24 h-2 bg-slate-700 rounded overflow-hidden">
+                        <div class="h-full bg-cyan-500 rounded" style="width: ${80 - i * 15}%"></div>
+                      </div>
+                      <span class="text-xs w-10">${80 - i * 15}%</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            
+            <!-- Efficiency Score -->
+            <div class="cyber-card p-4 text-center">
+              <h3 class="font-orbitron text-lg mb-4">System Efficiency</h3>
+              <div class="relative w-32 h-32 mx-auto mb-4">
+                <svg width="100%" height="100%" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,240,255,0.2)" stroke-width="8" />
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="#00f0ff" stroke-width="8" 
+                    stroke-dasharray="${87 * 2.83} 283" stroke-linecap="round" transform="rotate(-90 50 50)" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="font-orbitron text-2xl">87%</span>
+                </div>
+              </div>
+              <p class="text-green-400 text-sm">↑ 3% from last month</p>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+    
+    function renderMetersDashboard() {
+      return renderMainLayout(`
+        <div class="fade-in">
+          <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 class="font-orbitron text-2xl md:text-3xl glow-text mb-2">Meters Dashboard</h1>
+              <p class="opacity-70">Monitor and manage all connected meters</p>
+            </div>
+            <button class="cyber-btn rounded" onclick="addTestMeterReading()">
+              <span class="relative z-10">+ Add Reading</span>
+            </button>
+          </header>
+          
+          <!-- Meters Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            ${metersData.map(meter => `
+              <div class="cyber-card p-4 hover:scale-105 transition-transform">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <span class="text-3xl">⚡</span>
+                    <div>
+                      <p class="font-orbitron">${meter.id}</p>
+                      <p class="text-xs opacity-50">${meter.location}</p>
+                    </div>
+                  </div>
+                  <span class="w-3 h-3 rounded-full ${
+                    meter.status === 'online' ? 'status-online' :
+                    meter.status === 'warning' ? 'status-warning pulse' :
+                    'status-alert alert-flash'
+                  }"></span>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-center">
+                  <div class="bg-slate-900/50 p-3 rounded">
+                    <p class="text-xs opacity-50 mb-1">Current</p>
+                    <p class="font-orbitron">${Math.round(Math.random() * 50 + 10)}A</p>
+                  </div>
+                  <div class="bg-slate-900/50 p-3 rounded">
+                    <p class="text-xs opacity-50 mb-1">Voltage</p>
+                    <p class="font-orbitron">${Math.round(Math.random() * 10 + 215)}V</p>
+                  </div>
+                  <div class="bg-slate-900/50 p-3 rounded">
+                    <p class="text-xs opacity-50 mb-1">Power</p>
+                    <p class="font-orbitron">${Math.round(Math.random() * 500 + 100)}W</p>
+                  </div>
+                  <div class="bg-slate-900/50 p-3 rounded">
+                    <p class="text-xs opacity-50 mb-1">Factor</p>
+                    <p class="font-orbitron">0.${Math.round(Math.random() * 15 + 85)}</p>
+                  </div>
+                </div>
+                
+                <div class="mt-4 flex gap-2">
+                  <button class="flex-1 py-2 bg-cyan-500/20 border border-cyan-500/50 rounded text-cyan-400 text-sm hover:bg-cyan-500/30 transition-all">
+                    Details
+                  </button>
+                  <button class="flex-1 py-2 bg-slate-700/50 border border-slate-600 rounded text-sm hover:border-cyan-500 transition-all">
+                    History
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `);
+    }
+    
+    function renderAlertsDashboard() {
+      const alerts = allRecords.filter(r => r.type === 'alert').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      return renderMainLayout(`
+        <div class="fade-in">
+          <header class="mb-6">
+            <h1 class="font-orbitron text-2xl md:text-3xl glow-text mb-2">Alerts Dashboard</h1>
+            <p class="opacity-70">View and manage system alerts</p>
+          </header>
+          
+          <!-- Alert Stats -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="cyber-card p-4 text-center">
+              <p class="text-3xl font-orbitron text-red-400">${alerts.filter(a => a.severity === 'critical').length}</p>
+              <p class="text-xs opacity-50">Critical</p>
+            </div>
+            <div class="cyber-card p-4 text-center">
+              <p class="text-3xl font-orbitron text-orange-400">${alerts.filter(a => a.severity === 'high').length}</p>
+              <p class="text-xs opacity-50">High</p>
+            </div>
+            <div class="cyber-card p-4 text-center">
+              <p class="text-3xl font-orbitron text-yellow-400">${alerts.filter(a => a.severity === 'medium').length}</p>
+              <p class="text-xs opacity-50">Medium</p>
+            </div>
+            <div class="cyber-card p-4 text-center">
+              <p class="text-3xl font-orbitron text-green-400">${alerts.filter(a => a.severity === 'low').length}</p>
+              <p class="text-xs opacity-50">Low</p>
+            </div>
+          </div>
+          
+          <!-- Alerts List -->
+          <div class="cyber-card p-4">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-orbitron text-lg">Recent Alerts</h3>
+              <button onclick="generateTestAlert()" class="px-4 py-2 bg-red-500/20 border border-red-500/50 rounded text-red-400 text-sm hover:bg-red-500/30 transition-all">
+                + Test Alert
+              </button>
+            </div>
+            
+            ${alerts.length === 0 ? `
+              <div class="text-center py-12 opacity-50">
+                <p class="text-4xl mb-4">✅</p>
+                <p>No alerts detected. System is secure.</p>
+              </div>
+            ` : `
+              <div class="space-y-3 max-h-96 overflow-y-auto">
+                ${alerts.slice(0, 20).map(alert => `
+                  <div class="flex items-center gap-4 p-4 bg-slate-900/50 rounded border-l-4 ${
+                    alert.severity === 'critical' ? 'border-red-500' :
+                    alert.severity === 'high' ? 'border-orange-500' :
+                    alert.severity === 'medium' ? 'border-yellow-500' :
+                    'border-green-500'
+                  } ${!alert.resolved && alert.severity === 'critical' ? 'alert-flash' : ''}">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1">
+                        <span class="font-orbitron text-sm">${alert.status}</span>
+                        <span class="px-2 py-0.5 rounded text-xs ${
+                          alert.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
+                          alert.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
+                          alert.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                          'bg-green-500/20 text-green-400'
+                        }">${alert.severity}</span>
+                      </div>
+                      <p class="text-xs opacity-50">${alert.meter_id} • ${alert.location}</p>
+                      <p class="text-xs opacity-50">${formatDate(alert.timestamp)}</p>
+                    </div>
+                    <div class="flex gap-2">
+                      ${!alert.resolved ? `
+                        <button onclick="resolveAlert('${alert.__backendId}')" class="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded text-green-400 text-xs hover:bg-green-500/30 transition-all">
+                          Resolve
+                        </button>
+                      ` : `
+                        <span class="px-3 py-1 bg-slate-700/50 rounded text-xs">Resolved</span>
+                      `}
+                      <button onclick="deleteAlert('${alert.__backendId}')" class="px-3 py-1 bg-red-500/20 border border-red-500/50 rounded text-red-400 text-xs hover:bg-red-500/30 transition-all">
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        </div>
+      `);
+    }
+    
+    function renderDetectionDashboard() {
+      const activeAlerts = allRecords.filter(r => r.type === 'alert' && !r.resolved);
+      const hasGoogleMap = config.map_api_key && config.map_api_key.trim() !== '';
+      
+      // Initialize Google Map if API key is provided
+      if (hasGoogleMap && !googleMap) {
+        setTimeout(() => initGoogleMap(config.map_api_key), 500);
+      }
+      
+      return renderMainLayout(`
+        <div class="fade-in">
+          <header class="mb-6">
+            <h1 class="font-orbitron text-2xl md:text-3xl glow-text mb-2">Detection System</h1>
+            <p class="opacity-70">Real-time radar and map-based threat detection</p>
+            ${activeAlerts.length > 0 ? `<p class="text-xs text-red-400 mt-2">🚨 ${activeAlerts.length} Active Threat(s) Detected</p>` : ''}
+          </header>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Live Radar System -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-400 rounded-full pulse"></span>
+                Live Radar Scan
+              </h3>
+              <div class="relative h-80 bg-slate-900/50 rounded overflow-hidden" id="detection-radar-container">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <!-- Radar Rings -->
+                  <div class="radar-ring" style="width: 90%; height: 90%;"></div>
+                  <div class="radar-ring" style="width: 70%; height: 70%;"></div>
+                  <div class="radar-ring" style="width: 50%; height: 50%;"></div>
+                  <div class="radar-ring" style="width: 30%; height: 30%;"></div>
+                  
+                  <!-- Radar Sweep -->
+                  <div class="radar-sweep"></div>
+                  
+                  <!-- Center Point -->
+                  <div class="absolute w-4 h-4 bg-cyan-500 rounded-full" style="box-shadow: 0 0 20px #00f0ff;"></div>
+                  
+                  <!-- Live Alert Dots Added by JS -->
+                </div>
+                
+                <div class="absolute top-2 right-2 text-xs font-orbitron">
+                  <span class="text-green-400">● LIVE SCANNING</span>
+                </div>
+                <div class="absolute bottom-2 left-2 text-xs opacity-50">
+                  <span>📍 Active: ${activeAlerts.length}</span>
+                </div>
+              </div>
+              <div class="mt-3 text-xs opacity-70 flex gap-4">
+                <span>🟢 Range: 5km</span>
+                <span>🔄 Update: 2s</span>
+              </div>
+            </div>
+            
+            <!-- Map View -->
+            <div class="cyber-card p-4">
+              <h3 class="font-orbitron text-lg mb-4 flex items-center gap-2">
+                <span>🗺️</span>
+                ${hasGoogleMap ? 'Google Map - Live Threats' : 'Grid Map Detection'}
+              </h3>
+              ${hasGoogleMap ? `
+                <div id="google-map-container" class="h-80 rounded" style="background: #1a3a5c;"></div>
+                <div class="mt-2 text-xs opacity-70">Click markers for details</div>
+              ` : `
+                <div class="h-80 rounded bg-slate-900/50 relative overflow-hidden" id="grid-map">
+                  <svg width="100%" height="100%" class="absolute inset-0 opacity-20">
+                    <defs>
+                      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00f0ff" stroke-width="0.5"/>
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                  </svg>
+                  
+                  <div class="absolute top-2 left-2 text-xs font-orbitron opacity-50">LAT: 23.0225° N</div>
+                  <div class="absolute bottom-2 left-2 text-xs font-orbitron opacity-50">LNG: 72.5714° E</div>
+                  
+                  ${metersData.map((meter, i) => `
+                    <div class="absolute cursor-pointer group" style="top: ${20 + i * 15}%; left: ${15 + i * 15}%;">
+                      <div class="w-4 h-4 rounded-full ${
+                        meter.status === 'alert' ? 'bg-red-500' : 
+                        meter.status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
+                      }" style="box-shadow: 0 0 10px currentColor;"></div>
+                      <div class="absolute left-6 top-0 bg-slate-800/90 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        ${meter.id} - ${meter.location}
+                      </div>
+                    </div>
+                  `).join('')}
+                  
+                  ${activeAlerts.slice(0, 5).map((alert, i) => `
+                    <div class="map-marker" style="top: ${25 + i * 12}%; left: ${25 + i * 12}%;"></div>
+                  `).join('')}
+                </div>
+                <div class="mt-2 text-xs opacity-70">💡 Add Google Maps API key in settings for real map</div>
+              `}
+            </div>
+          </div>
+          
+          <!-- Active Threats List -->
+          <div class="cyber-card p-4 mb-6">
+            <h3 class="font-orbitron text-lg mb-4">🎯 Real-Time Threat Detection (${activeAlerts.length})</h3>
+            ${activeAlerts.length === 0 ? `
+              <div class="text-center py-6 opacity-50">
+                <p class="text-lg">✅ No active threats detected</p>
+                <p class="text-xs">System is secure</p>
+              </div>
+            ` : `
+              <div class="space-y-2 max-h-48 overflow-y-auto">
+                ${activeAlerts.slice(0, 10).map(alert => `
+                  <div class="flex items-center gap-3 p-3 bg-slate-900/50 rounded border-l-4 ${
+                    alert.severity === 'critical' ? 'border-red-500' :
+                    alert.severity === 'high' ? 'border-orange-500' :
+                    alert.severity === 'medium' ? 'border-yellow-500' :
+                    'border-green-500'
+                  } ${alert.severity === 'critical' ? 'alert-flash' : ''}">
+                    <span class="text-lg">📍</span>
+                    <div class="flex-1 text-sm">
+                      <p class="font-orbitron">${alert.location}</p>
+                      <p class="text-xs opacity-70">${alert.status} • ${formatDate(alert.timestamp).split(',')[1]}</p>
+                    </div>
+                    <span class="px-2 py-1 rounded text-xs ${
+                      alert.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
+                      alert.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
+                      alert.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-green-500/20 text-green-400'
+                    }">${alert.severity}</span>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+          
+          <!-- Live Alert Graph -->
+          <div class="cyber-card p-4">
+            <h3 class="font-orbitron text-lg mb-4 flex items-center gap-2">
+              <span class="w-2 h-2 bg-red-400 rounded-full ${activeAlerts.length > 0 ? 'alert-flash' : ''}"></span>
+              Alert Frequency Timeline
+            </h3>
+            <div class="h-48 relative bg-slate-900/50 rounded overflow-hidden">
+              <svg width="100%" height="100%" viewBox="0 0 500 180" preserveAspectRatio="none" id="alert-graph">
+                <defs>
+                  <linearGradient id="alertGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff3366;stop-opacity:0.5" />
+                    <stop offset="100%" style="stop-color:#ff3366;stop-opacity:0" />
+                  </linearGradient>
+                </defs>
+                <path id="alert-area" fill="url(#alertGrad)" />
+                <path id="alert-line" fill="none" stroke="#ff3366" stroke-width="2" filter="drop-shadow(0 0 5px #ff3366)" />
+              </svg>
+              
+              ${activeAlerts.length > 0 ? `
+                <div class="absolute top-2 right-2 px-3 py-1 bg-red-500/30 border border-red-500 rounded text-red-400 text-xs alert-flash">
+                  ⚠️ THREATS ACTIVE
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `);
+    }
+    
+    function renderProfilePage() {
+      if (!currentUser) return renderLoginPage();
+      
+      return renderMainLayout(`
+        <div class="fade-in">
+          <header class="mb-6">
+            <h1 class="font-orbitron text-2xl md:text-3xl glow-text mb-2">User Profile</h1>
+            <p class="opacity-70">Manage your account settings</p>
+          </header>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Profile Card -->
+            <div class="cyber-card p-6 text-center">
+              <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-4xl glow-box">
+                👤
+              </div>
+              <h2 class="font-orbitron text-xl mb-1">${currentUser.name}</h2>
+              <p class="text-sm opacity-50 mb-4">${currentUser.email}</p>
+              <div class="inline-block px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 rounded">
+                <p class="text-xs opacity-50">Department</p>
+                <p class="font-orbitron">${currentUser.department}</p>
+              </div>
+            </div>
+            
+            <!-- Account Details -->
+            <div class="cyber-card p-6 lg:col-span-2">
+              <h3 class="font-orbitron text-lg mb-4">Account Details</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Full Name</label>
+                  <input type="text" value="${currentUser.name}" class="cyber-input rounded" readonly>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Email</label>
+                  <input type="email" value="${currentUser.email}" class="cyber-input rounded" readonly>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Department</label>
+                  <input type="text" value="${currentUser.department}" class="cyber-input rounded" readonly>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Role</label>
+                  <input type="text" value="System Administrator" class="cyber-input rounded" readonly>
+                </div>
+              </div>
+              
+              <div class="mt-6 pt-6 border-t border-cyan-500/30">
+                <h4 class="font-orbitron mb-4">Activity Stats</h4>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                  <div class="bg-slate-900/50 p-4 rounded">
+                    <p class="font-orbitron text-2xl">${allRecords.filter(r => r.type === 'alert').length}</p>
+                    <p class="text-xs opacity-50">Alerts Handled</p>
+                  </div>
+                  <div class="bg-slate-900/50 p-4 rounded">
+                    <p class="font-orbitron text-2xl">${metersData.length}</p>
+                    <p class="text-xs opacity-50">Meters Monitored</p>
+                  </div>
+                  <div class="bg-slate-900/50 p-4 rounded">
+                    <p class="font-orbitron text-2xl">24/7</p>
+                    <p class="text-xs opacity-50">Uptime</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Team Section -->
+          <div class="cyber-card p-6 mt-6">
+            <h3 class="font-orbitron text-lg mb-4">Development Team - ${config.college_name}</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              ${teamMembers.map(member => `
+                <div class="bg-slate-900/50 p-4 rounded text-center hover:bg-slate-800/50 transition-all">
+                  <div class="text-4xl mb-2">${member.avatar}</div>
+                  <p class="font-orbitron text-sm">${member.name}</p>
+                  <p class="text-xs opacity-50">${member.role}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `);
+    }
+    
+    function renderContactPage() {
+      return renderMainLayout(`
+        <div class="fade-in">
+          <header class="mb-6">
+            <h1 class="font-orbitron text-2xl md:text-3xl glow-text mb-2">Contact Us</h1>
+            <p class="opacity-70">Get in touch with our team</p>
+          </header>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Contact Form -->
+            <div class="cyber-card p-6">
+              <h3 class="font-orbitron text-lg mb-4">Send Message</h3>
+              <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Your Name</label>
+                  <input type="text" id="contact-name" class="cyber-input rounded" placeholder="Enter your name" required>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Email</label>
+                  <input type="email" id="contact-email" class="cyber-input rounded" placeholder="Enter your email" required>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Subject</label>
+                  <input type="text" id="contact-subject" class="cyber-input rounded" placeholder="Message subject" required>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2 opacity-70">Message</label>
+                  <textarea id="contact-message" class="cyber-input rounded h-32 resize-none" placeholder="Your message..." required></textarea>
+                </div>
+                <button type="submit" class="cyber-btn w-full rounded">
+                  <span class="relative z-10">Send Message</span>
+                </button>
+              </form>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="space-y-6">
+              <div class="cyber-card p-6">
+                <h3 class="font-orbitron text-lg mb-4">Contact Information</h3>
+                <div class="space-y-4">
+                  <div class="flex items-center gap-4">
+                    <span class="text-2xl">📧</span>
+                    <div>
+                      <p class="text-sm opacity-50">Email</p>
+                      <p class="font-orbitron">kingofmasterniraj@gmail.com</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="text-2xl">🏫</span>
+                    <div>
+                      <p class="text-sm opacity-50">Institution</p>
+                      <p class="font-orbitron" id="contact-college">${config.college_name}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="text-2xl">💻</span>
+                    <div>
+                      <p class="text-sm opacity-50">Project</p>
+                      <p class="font-orbitron" id="contact-title">${config.system_title}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="cyber-card p-6">
+                <h3 class="font-orbitron text-lg mb-4">Team Members</h3>
+                <div class="space-y-3">
+                  ${teamMembers.map(member => `
+                    <div class="flex items-center gap-3 p-3 bg-slate-900/50 rounded">
+                      <span class="text-2xl">${member.avatar}</span>
+                      <div>
+                        <p class="font-orbitron text-sm">${member.name}</p>
+                        <p class="text-xs opacity-50">${member.role}</p>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+    
+    // =============================================
+    // EVENT HANDLERS
+    // =============================================
+    
+    function showSignup() {
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('signup-form').classList.remove('hidden');
+    }
+    
+    function showLogin() {
+      document.getElementById('signup-form').classList.add('hidden');
+      document.getElementById('login-form').classList.remove('hidden');
+    }
+    
+    function handleLogin() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      
+      if (!email || !password) {
+        showToast('Please fill in all fields', 'warning');
+        return;
+      }
+      
+      // Simulate login
+      currentUser = {
+        name: email.split('@')[0],
+        email: email,
+        department: 'Engineering'
+      };
+      isLoggedIn = true;
+      
+      // Enable sound after user interaction
+      alertSound = document.getElementById('alert-sound');
+      
+      showToast('Login successful!', 'success');
+      navigateTo('overview');
+      startSimulation();
+    }
+    
+    function handleSignup() {
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const dept = document.getElementById('signup-dept').value;
+      
+      if (!name || !email || !password) {
+        showToast('Please fill in all required fields', 'warning');
+        return;
+      }
+      
+      currentUser = {
+        name: name,
+        email: email,
+        department: dept || 'General'
+      };
+      isLoggedIn = true;
+      
+      // Enable sound after user interaction
+      alertSound = document.getElementById('alert-sound');
+      
+      showToast('Account created successfully!', 'success');
+      navigateTo('overview');
+      startSimulation();
+    }
+    
+    function handleLogout() {
+      isLoggedIn = false;
+      currentUser = null;
+      stopSimulation();
+      navigateTo('login');
+      showToast('Logged out successfully', 'success');
+    }
+    
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (sidebar && overlay) {
+        sidebarOpen = !sidebarOpen;
+        sidebar.classList.toggle('open', sidebarOpen);
+        overlay.classList.toggle('active', sidebarOpen);
+      }
+    }
+    
+    function navigateTo(page) {
+      currentPage = page;
+      if (sidebarOpen) {
+        toggleSidebar();
+      }
+      renderApp();
+    }
+    
+    async function generateTestAlert() {
+      if (allRecords.length >= 999) {
+        showToast('Maximum data limit reached. Please delete some records.', 'warning');
+        return;
+      }
+      
+      const meter = metersData[Math.floor(Math.random() * metersData.length)];
+      const alertTypes = ['Voltage Anomaly', 'Current Mismatch', 'Bypass Detected', 'Tampering Alert'];
+      const severities = ['low', 'medium', 'high', 'critical'];
+      
+      const newAlert = {
+        type: 'alert',
+        meter_id: meter.id,
+        location: meter.location,
+        lat: meter.lat,
+        lng: meter.lng,
+        reading: Math.round(Math.random() * 500 + 100),
+        sensor1: Math.round(Math.random() * 100),
+        sensor2: Math.round(Math.random() * 100),
+        status: alertTypes[Math.floor(Math.random() * alertTypes.length)],
+        severity: severities[Math.floor(Math.random() * severities.length)],
+        timestamp: new Date().toISOString(),
+        resolved: false
+      };
+      
+      const result = await window.dataSdk.create(newAlert);
+      if (result.isOk) {
+        showToast(`🚨 ${newAlert.status} detected at ${newAlert.location}!`, 'alert');
+      } else {
+        showToast('Failed to create alert', 'warning');
+      }
+    }
+    
+    async function resolveAlert(backendId) {
+      const alert = allRecords.find(r => r.__backendId === backendId);
+      if (alert) {
+        const result = await window.dataSdk.update({ ...alert, resolved: true });
+        if (result.isOk) {
+          showToast('Alert resolved!', 'success');
+        }
+      }
+    }
+    
+    async function deleteAlert(backendId) {
+      const alert = allRecords.find(r => r.__backendId === backendId);
+      if (alert) {
+        const result = await window.dataSdk.delete(alert);
+        if (result.isOk) {
+          showToast('Alert deleted', 'success');
+        }
+      }
+    }
+    
+    async function addTestMeterReading() {
+      if (allRecords.length >= 999) {
+        showToast('Maximum data limit reached', 'warning');
+        return;
+      }
+      
+      const meter = metersData[Math.floor(Math.random() * metersData.length)];
+      const reading = {
+        type: 'reading',
+        meter_id: meter.id,
+        location: meter.location,
+        lat: meter.lat,
+        lng: meter.lng,
+        reading: Math.round(Math.random() * 500 + 100),
+        sensor1: Math.round(Math.random() * 50 + 200),
+        sensor2: Math.round(Math.random() * 30 + 10),
+        status: 'normal',
+        severity: 'low',
+        timestamp: new Date().toISOString(),
+        resolved: true
+      };
+      
+      const result = await window.dataSdk.create(reading);
+      if (result.isOk) {
+        showToast('Reading recorded!', 'success');
+      }
+    }
+    
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      showToast('Message sent successfully!', 'success');
+      document.getElementById('contact-name').value = '';
+      document.getElementById('contact-email').value = '';
+      document.getElementById('contact-subject').value = '';
+      document.getElementById('contact-message').value = '';
+    }
+    
+    // =============================================
+    // RENDER & ANIMATION
+    // =============================================
+    
+    function renderApp() {
+      const app = document.getElementById('app');
+      
+      if (!isLoggedIn || currentPage === 'login') {
+        app.innerHTML = renderLoginPage();
+      } else {
+        switch (currentPage) {
+          case 'overview':
+            app.innerHTML = renderOverviewDashboard();
+            break;
+          case 'analytics':
+            app.innerHTML = renderAnalyticsDashboard();
+            break;
+          case 'meters':
+            app.innerHTML = renderMetersDashboard();
+            break;
+          case 'alerts':
+            app.innerHTML = renderAlertsDashboard();
+            break;
+          case 'detection':
+            app.innerHTML = renderDetectionDashboard();
+            break;
+          case 'profile':
+            app.innerHTML = renderProfilePage();
+            break;
+          case 'contact':
+            app.innerHTML = renderContactPage();
+            break;
+          default:
+            app.innerHTML = renderOverviewDashboard();
+        }
+      }
+      
+      updateCharts();
+    }
+    
+    function updateCharts() {
+      // Update power flow chart
+      const powerLine = document.getElementById('power-line');
+      const powerArea = document.getElementById('power-area');
+      if (powerLine && powerArea) {
+        const points = [];
+        const areaPoints = [];
+        for (let i = 0; i <= 20; i++) {
+          const x = i * 20;
+          const y = 90 + Math.sin(i * 0.5 + Date.now() / 1000) * 40 + Math.random() * 20;
+          points.push(`${x},${y}`);
+          areaPoints.push(`${x},${y}`);
+        }
+        powerLine.setAttribute('d', 'M' + points.join(' L'));
+        powerArea.setAttribute('d', 'M0,180 L' + areaPoints.join(' L') + ' L400,180 Z');
+      }
+      
+      // Update alert graph
+      const alertLine = document.getElementById('alert-line');
+      const alertArea = document.getElementById('alert-area');
+      if (alertLine && alertArea) {
+        const points = [];
+        for (let i = 0; i <= 25; i++) {
+          const x = i * 20;
+          const y = 90 + Math.sin(i * 0.3 + Date.now() / 800) * 50 + Math.random() * 30;
+          points.push(`${x},${y}`);
+        }
+        alertLine.setAttribute('d', 'M' + points.join(' L'));
+        alertArea.setAttribute('d', 'M0,180 L' + points.join(' L') + ' L500,180 Z');
+      }
+      
+      // Update gauges
+      const gauge1 = document.getElementById('gauge-sensor1');
+      const gauge2 = document.getElementById('gauge-sensor2');
+      if (gauge1) {
+        const angle = -90 + Math.random() * 180;
+        gauge1.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+      }
+      if (gauge2) {
+        const angle = -90 + Math.random() * 180;
+        gauge2.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+      }
+      
+      // Update sensor values
+      const sensor1 = document.getElementById('sensor1-value');
+      const sensor2 = document.getElementById('sensor2-value');
+      if (sensor1) sensor1.textContent = Math.round(210 + Math.random() * 20) + 'V';
+      if (sensor2) sensor2.textContent = Math.round(10 + Math.random() * 20) + 'A';
+    }
+    
+    // Update charts periodically
+    setInterval(updateCharts, 2000);
+    
+    // =============================================
+    // SDK INITIALIZATION
+    // =============================================
+    
+    // Real-time radar animation loop
+    let radarAnimationId = null;
+    let googleMap = null;
+    let mapMarkers = [];
+    
+    const dataHandler = {
+      onDataChanged(data) {
+        allRecords = data;
+        if (isLoggedIn && currentPage !== 'login') {
+          // Update radar with live data
+          if (currentPage === 'detection') {
+            updateLiveRadar(data);
+            if (googleMap) updateGoogleMap(data);
+          }
+          renderApp();
+        }
+      }
+    };
+    
+    // Update radar with live alert positions
+    function updateLiveRadar(alerts) {
+      const radarContainer = document.getElementById('detection-radar-container');
+      if (!radarContainer) return;
+      
+      // Remove old dots
+      const oldDots = radarContainer.querySelectorAll('.live-radar-dot');
+      oldDots.forEach(dot => dot.remove());
+      
+      // Add active alert dots
+      const activeAlerts = alerts.filter(a => a.type === 'alert' && !a.resolved);
+      activeAlerts.forEach((alert, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'radar-dot live-radar-dot';
+        
+        // Calculate position based on lat/lng relative to center
+        const centerLat = 23.0225;
+        const centerLng = 72.5714;
+        const latDiff = alert.lat - centerLat;
+        const lngDiff = alert.lng - centerLng;
+        
+        // Scale to radar range (0-45 pixels from center)
+        const angle = Math.atan2(latDiff, lngDiff) * (180 / Math.PI);
+        const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 2000; // Scale factor
+        const maxDistance = 45;
+        const scaledDistance = Math.min(distance, maxDistance);
+        
+        const x = 50 + (scaledDistance / 45) * 40 * Math.cos(angle * Math.PI / 180);
+        const y = 50 + (scaledDistance / 45) * 40 * Math.sin(angle * Math.PI / 180);
+        
+        dot.style.top = y + '%';
+        dot.style.left = x + '%';
+        dot.style.background = alert.severity === 'critical' ? '#ff3366' : 
+                               alert.severity === 'high' ? '#ff6633' : 
+                               alert.severity === 'medium' ? '#ffaa00' : '#00ff88';
+        dot.title = `${alert.location} - ${alert.status}`;
+        
+        radarContainer.appendChild(dot);
+      });
+    }
+    
+    // Initialize Google Map
+    function initGoogleMap(apiKey) {
+      if (!apiKey || apiKey.trim() === '') return;
+      
+      // Load Google Maps API
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapAfterLoad`;
+      script.async = true;
+      script.defer = true;
+      
+      window.initMapAfterLoad = function() {
+        const mapContainer = document.getElementById('google-map-container');
+        if (!mapContainer) return;
+        
+        googleMap = new google.maps.Map(mapContainer, {
+          zoom: 15,
+          center: { lat: 23.0225, lng: 72.5714 },
+          mapTypeControl: false,
+          fullscreenControl: false,
+          styles: [
+            { elementType: 'geometry', stylers: [{ color: '#0a1628' }] },
+            { elementType: 'labels.text.stroke', stylers: [{ color: '#0a1628' }] },
+            { elementType: 'labels.text.fill', stylers: [{ color: '#e0f0ff' }] },
+            { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#0d2137' }] },
+            { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#1a3a5c' }] },
+            { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#0d2137' }] }
+          ]
+        });
+        
+        updateGoogleMap(allRecords);
+      };
+      
+      document.head.appendChild(script);
+    }
+    
+    // Update Google Map with alert markers
+    function updateGoogleMap(alerts) {
+      if (!googleMap) return;
+      
+      // Clear old markers
+      mapMarkers.forEach(marker => marker.setMap(null));
+      mapMarkers = [];
+      
+      // Add active alert markers
+      const activeAlerts = alerts.filter(a => a.type === 'alert' && !a.resolved);
+      
+      activeAlerts.forEach(alert => {
+        const marker = new google.maps.Marker({
+          position: { lat: alert.lat, lng: alert.lng },
+          map: googleMap,
+          title: alert.location,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: alert.severity === 'critical' ? '#ff3366' : 
+                       alert.severity === 'high' ? '#ff6633' : 
+                       alert.severity === 'medium' ? '#ffaa00' : '#00ff88',
+            fillOpacity: 0.8,
+            strokeColor: '#ffffff',
+            strokeWeight: 2
+          }
+        });
+        
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="color: #0a1628; padding: 8px;">
+              <strong>${alert.location}</strong><br/>
+              ${alert.status}<br/>
+              <small>Severity: ${alert.severity}</small>
+            </div>
+          `
+        });
+        
+        marker.addListener('click', () => {
+          infoWindow.open(googleMap, marker);
+        });
+        
+        mapMarkers.push(marker);
+      });
+    }
+    
+    async function initApp() {
+      // Initialize Data SDK
+      const dataResult = await window.dataSdk.init(dataHandler);
+      if (!dataResult.isOk) {
+        console.error('Failed to initialize Data SDK');
+      }
+      
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = { ...defaultConfig, ...newConfig };
+            
+            // Check if hardware is enabled
+            if (newConfig.enable_hardware !== undefined) {
+              hardwareEnabled = newConfig.enable_hardware === 'true' || newConfig.enable_hardware === true;
+            }
+            
+            // Update title elements
+            const loginTitle = document.getElementById('login-title');
+            if (loginTitle) loginTitle.textContent = config.system_title;
+            
+            const loginCollege = document.getElementById('login-college');
+            if (loginCollege) loginCollege.textContent = config.college_name;
+            
+            const contactCollege = document.getElementById('contact-college');
+            if (contactCollege) contactCollege.textContent = config.college_name;
+            
+            const contactTitle = document.getElementById('contact-title');
+            if (contactTitle) contactTitle.textContent = config.system_title;
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              {
+                get: () => cfg.primary_color || defaultConfig.primary_color,
+                set: (v) => { cfg.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); }
+              },
+              {
+                get: () => cfg.secondary_color || defaultConfig.secondary_color,
+                set: (v) => { cfg.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); }
+              },
+              {
+                get: () => cfg.accent_color || defaultConfig.accent_color,
+                set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); }
+              },
+              {
+                get: () => cfg.text_color || defaultConfig.text_color,
+                set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => cfg.surface_color || defaultConfig.surface_color,
+                set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['system_title', cfg.system_title || defaultConfig.system_title],
+            ['college_name', cfg.college_name || defaultConfig.college_name],
+            ['map_api_key', cfg.map_api_key || ''],
+            ['enable_hardware', cfg.enable_hardware ? 'true' : 'false']
+          ])
+        });
+      }
+      
+      // Create particles
+      createParticles();
+      
+      // Initial render
+      renderApp();
+    }
+    
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d60ac2440051397',t:'MTc3MjQ1NzM1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
