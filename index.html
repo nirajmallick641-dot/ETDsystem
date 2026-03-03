@@ -985,19 +985,26 @@
         </div>
        </div><!-- Map View -->
        <div class="card p-4">
-        <h2 class="font-orbitron font-semibold text-lg mb-4">Location Map</h2>
-        <div class="map-container" id="mapContainer">
-         <div class="map-placeholder">
-          <div class="map-grid"></div>
-          <div class="text-center z-10">
-           <svg class="w-16 h-16 text-cyan-400 mx-auto mb-4" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-           </svg>
-           <p class="text-cyan-400 font-orbitron">Monitoring Area</p>
-           <p class="text-sm text-gray-400 mt-2">Interactive map view</p>
-          </div><!-- Map markers will be added dynamically -->
-         </div>
-        </div>
-       </div>
+        <h2 class="font-orbitron font-semibold text-lg mb-4 text-cyan-400">Location Map</h2>
+        <div class="map-container relative overflow-hidden rounded-lg border border-cyan-500/40 shadow-[0_0_15px_rgba(34,211,238,0.2)]" id="mapContainer">
+        
+        <!-- PASTE YOUR GOOGLE MAPS IFRAME HERE -->
+        <iframe 
+            src="https://maps.app.goo.gl/E1BhsbPrJAUA7r3r7" 
+            width="100%" 
+            height="400" 
+            style="border:0; filter: invert(90%) hue-rotate(180deg) brightness(0.8) contrast(1.2);" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+
+        <!-- HUD Overlay for Sci-Fi look -->
+        <div class="absolute inset-0 pointer-events-none border-[1px] border-cyan-500/20"></div>
+    </div>
+</div>
+
+       
       </div><!-- Live Detection Chart -->
       <div class="card p-4">
        <h2 class="font-orbitron font-semibold text-lg mb-4">Live Detection Graph</h2>
