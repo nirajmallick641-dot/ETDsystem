@@ -1,7 +1,5 @@
 # ETDsystem (2.0) *-- new version --*
-I'll create a comprehensive PDF document for you. Since I can't directly generate PDF files, I'll provide you with the markdown content formatted for PDF conversion, which you can easily convert to PDF using free online tools.
 
-Here's the complete content ready for PDF:
 
 # PPI Electricity Theft Detection System (ETDS)
 ## Complete Technical Documentation
