@@ -510,7 +510,7 @@ Status: Production Ready ✅
 
 🎯 Quick Start Commands
 # Access system
-1. Open Canva Code link
+1. Open link
 
 # Login
 2. Enter email + password OR use Google/GitHub
